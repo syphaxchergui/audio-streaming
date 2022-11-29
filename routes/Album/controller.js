@@ -4,9 +4,11 @@ import {
   deleteAlbum,
   findAlbumById,
   findAllAlbums,
+  findAllAlbumsByArtist,
 } from "./service.js";
 import cloudinary from "../../core/cloudinary.js";
 import { isValidObjectId } from "mongoose";
+import { findArtistById } from "../Artist/service.js";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
@@ -16,6 +18,29 @@ export const getAllAlbums = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "List albums",
+      albums,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAlbumsByArtist = async (req, res, next) => {
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      throw new ErrorResponse("ID not valid", 422);
+    }
+    const artist = await findArtistById(req.params.id);
+    if (!artist) throw new ErrorResponse("No artist with id found", 404);
+
+    const albums = await findAllAlbumsByArtist(req.params.id);
+    if (!albums || albums.length === 0)
+      throw new ErrorResponse("No albums found", 404);
+
+    return res.status(200).json({
+      success: true,
+      message: artist.firstName + "'s albums",
+      artist,
       albums,
     });
   } catch (err) {
@@ -45,6 +70,11 @@ export const addNewAlbum = async (req, res, next) => {
     if (!isValidObjectId(req.body.artistId)) {
       throw new ErrorResponse("ArtistId not valid", 422);
     }
+
+    const artist = await findArtistById(req.body.artistId);
+
+    if (!artist) throw new ErrorResponse("Artist not found", 404);
+
     let result = await cloudinary.uploader.upload(req.file.path);
     const album = await createAlbum(
       req.body.artistId,

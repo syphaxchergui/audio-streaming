@@ -1,12 +1,13 @@
 import { Album } from "../../models/album.js";
 import ErrorResponse from "../../utils/errorResponse.js";
 
-export const findAllAlbums = async () => {
+export const findAllAlbums = async (populate) => {
   try {
     const albums = Album.find({}, "-__v -createdAt -updatedAt").populate(
       "artistId",
       "-__v -createdAt -updatedAt"
     );
+
     return albums;
   } catch (err) {
     throw new ErrorResponse("Erreur du serveur", 500);
@@ -20,6 +21,16 @@ export const findAlbumById = async (id) => {
       "-__v -createdAt -updatedAt"
     );
     return album;
+  } catch (err) {
+    throw new ErrorResponse("Erreur du serveur", 500);
+  }
+};
+
+export const findAllAlbumsByArtist = async (id) => {
+  try {
+    const albums = Album.find({ artistId: id }, "-__v -createdAt -updatedAt");
+
+    return albums;
   } catch (err) {
     throw new ErrorResponse("Erreur du serveur", 500);
   }

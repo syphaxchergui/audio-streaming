@@ -6,6 +6,7 @@ import {
   getAlbumById,
   getAllAlbums,
   removeAlbumById,
+  getAlbumsByArtist,
 } from "./controller.js";
 
 const router = express.Router();
@@ -13,6 +14,8 @@ const router = express.Router();
 router.get("/", getAllAlbums, errorHandler);
 
 router.get("/:id", getAlbumById, errorHandler);
+
+router.get("/artist/:id", getAlbumsByArtist, errorHandler);
 
 router.post("/", uploadAlbumCover.single("cover"), addNewAlbum, errorHandler);
 
