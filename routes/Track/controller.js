@@ -1,10 +1,13 @@
+import { isValidObjectId } from "mongoose";
 import {
   createGridFSReadStream,
   getGridFSAllFiles,
   getGridFSFiles,
   getGridFSFileMetaData,
+  getGridFSAllFilesByAlbum,
 } from "../../database/gridfs-service.js";
 import ErrorResponse from "../../utils/errorResponse.js";
+import { findAlbumById } from "../Album/service.js";
 
 export const getAllTracks = async (req, res, next) => {
   try {
@@ -36,7 +39,7 @@ export const getTrackById = async (req, res, next) => {
   }
 };
 
-export const getTracMetaDataById = async (req, res, next) => {
+export const getTrackMetaDataById = async (req, res, next) => {
   const trackId = req.params.id;
   try {
     const track = await getGridFSFileMetaData(trackId);
@@ -46,6 +49,29 @@ export const getTracMetaDataById = async (req, res, next) => {
       success: true,
       message: "Track metadata",
       track,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+export const getTrackMetaDataByAlbum = async (req, res, next) => {
+  try {
+    const albumId = req.params.id;
+    if (!isValidObjectId(albumId))
+      throw new ErrorResponse("Invalid album Id", 422);
+
+    const album = await findAlbumById(albumId);
+    if (!album) throw new ErrorResponse("No album with ID", 404);
+
+    const tracks = await getGridFSAllFilesByAlbum(albumId);
+    if (!tracks) {
+      throw new ErrorResponse("Tracks list is empty", 404);
+    }
+    return res.status(200).json({
+      success: true,
+      message: "List of tracks by album",
+      album,
+      tracks,
     });
   } catch (err) {
     next(err);

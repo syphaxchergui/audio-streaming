@@ -3,7 +3,8 @@ import { errorHandler } from "../../middlewares/error.js";
 import {
   getAllTracks,
   getTrackById,
-  getTracMetaDataById,
+  getTrackMetaDataById,
+  getTrackMetaDataByAlbum,
   removeTrack,
   uploadTrack,
 } from "./controller.js";
@@ -15,7 +16,8 @@ router.get("/", getAllTracks, errorHandler);
 
 router.get("/:id", getTrackById, errorHandler);
 
-router.get("/metadata/:id", getTracMetaDataById, errorHandler);
+router.get("/metadata/:id", getTrackMetaDataById, errorHandler);
+router.get("/album/:id", getTrackMetaDataByAlbum, errorHandler);
 
 router.post("/", [GridFSMiddleware()], uploadTrack, errorHandler);
 
