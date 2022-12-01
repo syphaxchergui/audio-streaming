@@ -5,10 +5,12 @@ import {
   findAlbumById,
   findAllAlbums,
   findAllAlbumsByArtist,
+  findAlbumBySlug,
 } from "./service.js";
 import cloudinary from "../../core/cloudinary.js";
 import { isValidObjectId } from "mongoose";
 import { findArtistById } from "../Artist/service.js";
+import slug from "slug";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
@@ -65,6 +67,23 @@ export const getAlbumById = async (req, res, next) => {
   }
 };
 
+export const getAlbumBySlug = async (req, res, next) => {
+  try {
+    if (!req.params.slug) {
+      throw new ErrorResponse("slug not valid", 422);
+    }
+    const album = await findAlbumBySlug(req.params.slug);
+    if (!album) throw new ErrorResponse("No album with slug found", 404);
+    return res.status(200).json({
+      success: true,
+      message: "Album by slug",
+      album,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const addNewAlbum = async (req, res, next) => {
   try {
     if (!isValidObjectId(req.body.artistId)) {
@@ -80,7 +99,8 @@ export const addNewAlbum = async (req, res, next) => {
       req.body.artistId,
       req.body.title,
       req.body.year,
-      result.url
+      result.url,
+      slug(req.body.title)
     );
 
     return res.status(200).json({

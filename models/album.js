@@ -19,6 +19,10 @@ const albumSchema = mongoose.Schema(
       required: true,
       min: 1900,
     },
+    slug: {
+      type: mongoose.Schema.Types.String,
+      required: true,
+    },
   },
   {
     timestamps: true,

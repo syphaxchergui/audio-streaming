@@ -31,3 +31,12 @@ export const createArtist = async (firstName, lastName, bio) => {
     throw new ErrorResponse("Erreur lors de la creation de l'artiste", 500);
   }
 };
+
+export const deleteArtist = async (id) => {
+  try {
+    const artist = Artist.deleteOne({ _id: id });
+    return artist;
+  } catch (err) {
+    throw new ErrorResponse("Erreur lors de la supression de l'artiste", 500);
+  }
+};

@@ -7,13 +7,16 @@ import {
   getAllAlbums,
   removeAlbumById,
   getAlbumsByArtist,
+  getAlbumBySlug,
 } from "./controller.js";
 
 const router = express.Router();
 
 router.get("/", getAllAlbums, errorHandler);
 
-router.get("/:id", getAlbumById, errorHandler);
+router.get("/id/:id", getAlbumById, errorHandler);
+
+router.get("/:slug", getAlbumBySlug, errorHandler);
 
 router.get("/artist/:id", getAlbumsByArtist, errorHandler);
 

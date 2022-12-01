@@ -1,5 +1,10 @@
 import ErrorResponse from "../../utils/errorResponse.js";
-import { createArtist, findArtistById, findAllArtists } from "./service.js";
+import {
+  createArtist,
+  findArtistById,
+  findAllArtists,
+  deleteArtist,
+} from "./service.js";
 import { isValidObjectId } from "mongoose";
 
 export const getAllArtists = async (req, res, next) => {
@@ -46,6 +51,24 @@ export const addNewArtist = async (req, res, next) => {
       success: true,
       message: "Artist created successfully",
       artist,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const removeArtisteById = async (req, res, next) => {
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      throw new ErrorResponse("ID not valid", 422);
+    }
+    const artistById = await findArtistById(req.params.id);
+    if (!artistById) throw new ErrorResponse("No artiste with id found", 404);
+
+    const artist = await deleteArtist(req.params.id);
+    return res.status(200).json({
+      success: true,
+      message: "Artist deleted successfully",
     });
   } catch (err) {
     next(err);
