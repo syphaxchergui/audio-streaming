@@ -74,6 +74,7 @@ export const getAlbumBySlug = async (req, res, next) => {
     }
     const album = await findAlbumBySlug(req.params.slug);
     if (!album) throw new ErrorResponse("No album with slug found", 404);
+
     return res.status(200).json({
       success: true,
       message: "Album by slug",

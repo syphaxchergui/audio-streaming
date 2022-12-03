@@ -78,7 +78,6 @@ export const getGridFSAllFiles = async () => {
 export const getGridFSAllFilesByAlbum = async (id) => {
   try {
     const tracks = await TrackGrid.find({ metadata: { album: id } });
-    if (!tracks || tracks?.length < 1) return null;
     return tracks;
   } catch (err) {
     console.log(err);
