@@ -45,10 +45,13 @@ export const getTrackMetaDataById = async (req, res, next) => {
     const track = await getGridFSFileMetaData(trackId);
     if (!track) throw new ErrorResponse("No track with ID", 404);
 
+    const album = await findAlbumById(track.metadata.album);
+
     return res.status(200).json({
       success: true,
       message: "Track metadata",
       track,
+      album,
     });
   } catch (err) {
     next(err);
