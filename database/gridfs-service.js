@@ -4,6 +4,7 @@ import Grid from "gridfs-stream";
 import { Schema } from "mongoose";
 import { TrackGrid } from "../models/track.js";
 import dotenv from "dotenv";
+import { Album } from "../models/album.js";
 dotenv.config();
 
 const url = process.env.URL;
@@ -77,7 +78,8 @@ export const getGridFSAllFiles = async () => {
 
 export const getGridFSAllFilesByAlbum = async (id) => {
   try {
-    const tracks = await TrackGrid.find({ metadata: { album: id } });
+    //const tracks = await TrackGrid.find({ metadata: { album: id } });
+    const tracks = await TrackGrid.find({ "metadata.album": id });
     return tracks;
   } catch (err) {
     console.log(err);
@@ -94,12 +96,17 @@ export const storage = new GridFsStorage({
   cache: true,
   options: { useUnifiedTopology: true },
   file: (req, file) => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      const album = await Album.findById(
+        mongoose.Types.ObjectId(req.query.albumID)
+      );
       const fileInfo = {
         filename: file.originalname,
         bucketName: "tracks",
         metadata: {
           album: req.query.albumID,
+          title: album.title,
+          year: album.year,
         },
       };
       resolve(fileInfo);

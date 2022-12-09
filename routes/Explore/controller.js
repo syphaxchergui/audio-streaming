@@ -1,10 +1,12 @@
 import { getGridFSAllFiles } from "../../database/gridfs-service.js";
 import { findAllAlbums } from "../Album/service.js";
+import { findAllArtists } from "../Artist/service.js";
 
 export const getExploreData = async (req, res, next) => {
   try {
     const albums = await findAllAlbums();
     const tracks = await getGridFSAllFiles();
+    const artists = await findAllArtists();
 
     let resultAlbums;
     let result;
@@ -17,6 +19,7 @@ export const getExploreData = async (req, res, next) => {
       message: "Explore data",
       albums: resultAlbums,
       tracks: result,
+      artists,
     });
   } catch (err) {
     next(err);
